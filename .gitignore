@@ -1,0 +1,14 @@
+*.pdf
+*.docx
+applications_log.csv
+config_en.json
+config_de.json
+webhook.log
+webhook_error.log
+*.log
+__pycache__/
+*.pyc
+.env
+.DS_Store
+Resume-EN.docx
+Resume-DE.docx
