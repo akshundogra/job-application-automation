@@ -2,7 +2,7 @@
 
 An n8n-based automation that takes you from "found a job" to "ready to apply" in 60 seconds — generating tailored resumes and cover letters in English or German, converting to PDF, scrubbing metadata, and logging every application.
 
-![n8n workflow](docs/screenshots/workflow.png)
+![n8n workflow](Workflow_image.png)
 
 ---
 
@@ -24,6 +24,69 @@ An n8n-based automation that takes you from "found a job" to "ready to apply" in
 
 ---
 
+## Why UTM Tracking on Job Applications?
+
+One of the biggest frustrations in job searching is the black box — you send your resume and never know what happens next. Did the recruiter even open it? Did they visit your portfolio?
+
+This automation adds UTM parameters to every portfolio link in your resume and cover letter:
+```
+https://yourportfolio.com/?utm_source=resume-english&utm_medium=pdf&utm_term=company-name
+```
+
+This means if a recruiter clicks your portfolio link from your resume, you can see it in Google Analytics or any analytics tool:
+
+- **Which company** visited (utm_term = company slug)
+- **Which document** they came from (resume vs cover letter)
+- **Which language version** they read (English vs German)
+
+### What this tells you
+
+| Signal | What it means |
+|---|---|
+| Resume click, no response | They looked but weren't interested enough to reply |
+| Cover letter click | They read your cover letter carefully |
+| Multiple visits | Strong interest — follow up |
+| No clicks | Resume may not have been opened at all |
+
+This won't tell you everything — but it gives you real signal in a process that normally gives you none. Over time you can see patterns: which roles get more portfolio visits, which companies engage more, and whether your resume is actually being read.
+
+**Privacy note:** This only tracks clicks on your own portfolio website. No data is collected from recruiters without their knowledge — they simply click a link like any other.
+
+---
+
+## Analytics Setup
+
+To actually see the UTM data, you need an analytics tool on your portfolio website.
+
+### Recommended: Umami Analytics
+
+This project was built with [Umami](https://umami.is) in mind — it's:
+- **GDPR compliant** — no cookies, no personal data collection
+- **Open source** — self-host for free or use their cloud
+- **Privacy-first** — you own your data
+- **Lightweight** — one script tag on your website
+
+Once installed, you'll see UTM campaigns in Umami under **Sources** → **Campaigns**.
+
+### Other privacy-friendly alternatives
+
+- [Plausible](https://plausible.io) — simple, GDPR compliant, paid
+- [Matomo](https://matomo.org) — self-hostable, full-featured
+- [Fathom](https://usefathom.com) — simple, privacy-first, paid
+- Google Analytics — works but not privacy-first
+
+### Important: Data & Privacy Notice
+
+If you deploy this automation and collect any analytics data:
+
+> ⚠️ **You are responsible for complying with applicable privacy laws (GDPR, CCPA, etc.) in your region.**
+>
+> - Only collect data you actually need
+> - If your portfolio collects visitor data beyond basic analytics, declare it in a privacy policy
+> - UTM parameters in this project only track clicks originating from your own documents — no data is collected from recruiters beyond standard website analytics
+> - Self-hosting Umami or Plausible means data stays on your server and is not shared with third parties
+
+---
 ## Prerequisites
 
 | Tool | Purpose | Install |
