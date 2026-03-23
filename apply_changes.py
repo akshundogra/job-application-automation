@@ -146,7 +146,7 @@ def convert_to_pdf_with_word(docx_path):
     pdf_path = docx_path.replace('.docx', '.pdf')
     output_dir = os.path.dirname(docx_path)
     subprocess.run([
-        '/opt/homebrew/bin/soffice',
+        'soffice',
         '--headless',
         '--convert-to', 'pdf',
         '--outdir', output_dir,
@@ -157,7 +157,7 @@ def convert_to_pdf_with_word(docx_path):
 
 def scrub_metadata(pdf_path, author_name):
     subprocess.run([
-        '/opt/homebrew/bin/exiftool',
+        'exiftool',
         f'-Author={author_name}',
         '-Creator=Microsoft Word',
         '-Producer=Microsoft Word for Microsoft 365',
