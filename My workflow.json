@@ -1,5 +1,5 @@
 {
-  "name": "My workflow",
+  "name": "Job Application Automation",
   "nodes": [
     {
       "parameters": {
@@ -41,7 +41,7 @@
       ],
       "id": "4a376729-054c-42df-b96d-c2cf207c3857",
       "name": "On form submission",
-      "webhookId": "e6522179-f9c4-49d3-bd85-878067d58177"
+      "webhookId": "YOUR_WEBHOOK_ID"
     },
     {
       "parameters": {
@@ -56,19 +56,19 @@
             {
               "id": "8c678ec7-06e4-44ef-b78e-3d78c2be548f",
               "name": "utmCoverLetterEN",
-              "value": "={{ 'https://akshundogra.com/?utm_source=cover-letter-english&utm_medium=pdf&utm_term=' + $json['Company Name'].toLowerCase().replace(/[^a-z0-9]+/g, '-') }}",
+              "value": "={{ 'https://YOUR_PORTFOLIO_DOMAIN/?utm_source=cover-letter-english&utm_medium=pdf&utm_term=' + $json['Company Name'].toLowerCase().replace(/[^a-z0-9]+/g, '-') }}",
               "type": "string"
             },
             {
               "id": "02111542-3e09-457a-becb-658385130272",
               "name": "utmCoverLetterDE",
-              "value": "={{ 'https://akshundogra.com/?utm_source=anschreiben-deutsch&utm_medium=pdf&utm_term=' + $json['Company Name'].toLowerCase().replace(/[^a-z0-9]+/g, '-') }}",
+              "value": "={{ 'https://YOUR_PORTFOLIO_DOMAIN/?utm_source=anschreiben-deutsch&utm_medium=pdf&utm_term=' + $json['Company Name'].toLowerCase().replace(/[^a-z0-9]+/g, '-') }}",
               "type": "string"
             },
             {
               "id": "c7324ec3-aaa2-424a-8781-3ea474991b51",
               "name": "fileBase",
-              "value": "={{ 'Dogra_Akshun_' + $json['Company Name'].replace(/[^a-zA-Z0-9]/g, '_') + '_' + $json['Job Title'].replace(/[^a-zA-Z0-9]/g, '_') }}",
+              "value": "={{ 'YOUR_LASTNAME_FIRSTNAME_' + $json['Company Name'].replace(/[^a-zA-Z0-9]/g, '_') + '_' + $json['Job Title'].replace(/[^a-zA-Z0-9]/g, '_') }}",
               "type": "string"
             }
           ]
@@ -88,7 +88,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=You are a resume tailoring assistant for Akshun Dogra, a B2B Performance Marketing & Growth specialist.\n\nAnalyze his ACTUAL resume against the job description and suggest specific changes to maximize ATS keyword match.\n\nAKSHUN'S ACTUAL RESUME:\n{{ $json.resumeText }}\n\nJOB TITLE: {{ $json['Job Title'] }}\nCOMPANY: {{ $json['Company Name'] }}\n\nJOB DESCRIPTION:\n{{ $json['Job Description'] }}\n\nIMPORTANT RULES:\n- Only suggest changes using skills and experience already in the resume\n- Never invent tools or experience he does not have\n- Show the EXACT original bullet text and the EXACT replacement text so it can be auto-applied later\n\nReturn ONLY plain text with this structure:\n1. ATS score before (%)\n2. ATS score after (%)\n3. Top 5 missing keywords from JD\n4. Top 3 resume changes:\n   CHANGE 1:\n   ORIGINAL: [exact original text from resume]\n   REPLACE WITH: [new text using JD keywords]\n   REASON: [one sentence]\n   \n   CHANGE 2:\n   ORIGINAL: [exact original text]\n   REPLACE WITH: [new text]\n   REASON: [one sentence]\n   \n   CHANGE 3:\n   ORIGINAL: [exact original text]\n   REPLACE WITH: [new text]\n   REASON: [one sentence]",
+        "text": "=You are a resume tailoring assistant for YOUR_NAME, a YOUR_ROLE specialist.\n\nAnalyze their ACTUAL resume against the job description and suggest specific changes to maximize ATS keyword match.\n\nCANDIDATE'S ACTUAL RESUME:\n{{ $json.resumeText }}\n\nJOB TITLE: {{ $json['Job Title'] }}\nCOMPANY: {{ $json['Company Name'] }}\n\nJOB DESCRIPTION:\n{{ $json['Job Description'] }}\n\nIMPORTANT RULES:\n- Only suggest changes using skills and experience already in the resume\n- Never invent tools or experience the candidate does not have\n- Show the EXACT original bullet text and the EXACT replacement text so it can be auto-applied later\n\nReturn ONLY plain text with this structure:\n1. ATS score before (%)\n2. ATS score after (%)\n3. Top 5 missing keywords from JD\n4. Top 3 resume changes:\n   CHANGE 1:\n   ORIGINAL: [exact original text from resume]\n   REPLACE WITH: [new text using JD keywords]\n   REASON: [one sentence]\n   \n   CHANGE 2:\n   ORIGINAL: [exact original text]\n   REPLACE WITH: [new text]\n   REASON: [one sentence]\n   \n   CHANGE 3:\n   ORIGINAL: [exact original text]\n   REPLACE WITH: [new text]\n   REASON: [one sentence]",
         "messages": {
           "messageValues": []
         },
@@ -101,7 +101,7 @@
         -432
       ],
       "id": "bdb59a9c-88aa-40ec-a6f6-cbc411736d3a",
-      "name": "Basic LLM Chain"
+      "name": "Analyse Resume EN"
     },
     {
       "parameters": {
@@ -123,7 +123,7 @@
       "name": "Anthropic Chat Model",
       "credentials": {
         "anthropicApi": {
-          "id": "ftDQsIkAxDQ2XGq7",
+          "id": "YOUR_CREDENTIAL_ID",
           "name": "Anthropic account"
         }
       }
@@ -192,7 +192,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=You are writing a cover letter in English for Akshun Dogra.\n\nSTRUCTURE (follow exactly):\n- Paragraph 1: 2-3 sentences connecting the role to Akshun's focus. Never start with \"I am excited to apply\".\n- Bullet list: 4-5 achievements with real metrics using **bold** e.g. **ROAS 36x+**, **400% traffic increase**, **30% CTR increase**, **80% manual effort reduction**, **40% lead quality improvement**\n- Paragraph 2: 2-3 sentences connecting specifically to the company mission\n- - Closing line: one sentence of enthusiasm, then on a new line write exactly: akshundogra.com\n\n- Sign off: \"Kind regards,\" then blank line then \"Akshun Dogra\"\n- STRICT: 250-280 words MAX. One A4 page only.\n\nHEADER (include exactly as written):\nAkshun Dogra | Nürnberg, Germany\nakshundogra@gmail.com | +49 176 67730740\nlinkedin.com/in/akshundogra\nDate: {{ $now.toFormat('dd.MM.yyyy') }}\n\nSubject: Application for {{ $('On form submission').item.json['Job Title'] }} – {{ $('On form submission').item.json['Company Name'] }}\n\nDear {{ $('On form submission').item.json['Company Name'] }} Team,\n\nCONTEXT FOR WRITING:\nJOB TITLE: {{ $('On form submission').item.json['Job Title'] }}\nCOMPANY: {{ $('On form submission').item.json['Company Name'] }}\n\n\nRESUME ANALYSIS NOTES: {{ $json.text }}\n\nJOB DESCRIPTION:\n{{ $('On form submission').item.json['Job Description'] }}\n\nWrite the full cover letter now. Return only the cover letter text, nothing else.\n\n",
+        "text": "=You are writing a cover letter in English for YOUR_NAME.\n\nSTRUCTURE (follow exactly):\n- Paragraph 1: 2-3 sentences connecting the role to the candidate's focus. Never start with \"I am excited to apply\".\n- Bullet list: 4-5 achievements with real metrics using **bold** e.g. **YOUR_METRIC_1**, **YOUR_METRIC_2**, **YOUR_METRIC_3**, **YOUR_METRIC_4**, **YOUR_METRIC_5**\n- Paragraph 2: 2-3 sentences connecting specifically to the company mission\n- Closing line: one sentence of enthusiasm, then on a new line write exactly: YOUR_PORTFOLIO_DOMAIN\n- Sign off: \"Kind regards,\" then blank line then \"YOUR_NAME\"\n- STRICT: 250-280 words MAX. One A4 page only.\n\nHEADER (include exactly as written):\nYOUR_NAME | YOUR_CITY, YOUR_COUNTRY\nYOUR_EMAIL | YOUR_PHONE\nYOUR_LINKEDIN\nDate: {{ $now.toFormat('dd.MM.yyyy') }}\n\nSubject: Application for {{ $('On form submission').item.json['Job Title'] }} – {{ $('On form submission').item.json['Company Name'] }}\n\nDear {{ $('On form submission').item.json['Company Name'] }} Team,\n\nCONTEXT FOR WRITING:\nJOB TITLE: {{ $('On form submission').item.json['Job Title'] }}\nCOMPANY: {{ $('On form submission').item.json['Company Name'] }}\n\nRESUME ANALYSIS NOTES: {{ $json.text }}\n\nJOB DESCRIPTION:\n{{ $('On form submission').item.json['Job Description'] }}\n\nWrite the full cover letter now. Return only the cover letter text, nothing else.",
         "batching": {}
       },
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
@@ -202,12 +202,12 @@
         -328
       ],
       "id": "0842b272-67f8-4f19-b5c0-9c95c97eb03b",
-      "name": "Basic LLM Chain1"
+      "name": "Cover Letter EN"
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Du schreibst ein Anschreiben auf Deutsch für Akshun Dogra.\n\nSTRUKTUR (exakt einhalten):\n- Absatz 1: 2-3 Sätze, erster Satz beginnt kleingeschrieben nach \"Liebes [Firma] Team,\"\n- Bullet-Liste: 4-5 konkrete Leistungen mit echten Metriken z.B. **ROAS 36x+**, **400% Traffic-Steigerung**, **30% CTR-Verbesserung**, **80% weniger manueller Aufwand**, **40% bessere Lead-Qualität**\n- Absatz 2: 2-3 Sätze zur Mission des Unternehmens — zeige echtes Verständnis\n- Abschlusssatz: ein Satz Begeisterung, dann neue Zeile schreibe exakt: akshundogra.com\n- Grußformel: \"Viele Grüße,\" dann Leerzeile dann \"Akshun Dogra\"\n- STRIKT: 280-300 Wörter MAX. Eine A4-Seite.\n\nKOPFZEILE (exakt so übernehmen):\nAkshun Dogra | Nürnberg, Deutschland\nakshundogra@gmail.com | +49 176 67730740\nlinkedin.com/in/akshundogra\nDatum: {{ $now.toFormat('dd.MM.yyyy') }}\n\nBetreff: Bewerbung als {{ $('On form submission').item.json['Job Title'] }} – {{ $('On form submission').item.json['Company Name'] }}\n\nLiebes {{ $('On form submission').item.json['Company Name'] }} Team,\n\nKONTEXT FÜR DAS SCHREIBEN:\nJOBTITEL: {{ $('On form submission').item.json['Job Title'] }}\nFIRMA: {{ $('On form submission').item.json['Company Name'] }}\nLEBENSLAUF-ANALYSE: {{ $json.text }}\n\nSTELLENAUSSCHREIBUNG:\n{{ $('On form submission').item.json['Job Description'] }}\n\nSchreibe jetzt das vollständige Anschreiben. Gib nur den Anschreiben-Text zurück, nichts anderes.",
+        "text": "=Du schreibst ein Anschreiben auf Deutsch für YOUR_NAME.\n\nSTRUKTUR (exakt einhalten):\n- Absatz 1: 2-3 Sätze, erster Satz beginnt kleingeschrieben nach \"Liebes [Firma] Team,\"\n- Bullet-Liste: 4-5 konkrete Leistungen mit echten Metriken z.B. **YOUR_METRIC_1**, **YOUR_METRIC_2**, **YOUR_METRIC_3**, **YOUR_METRIC_4**, **YOUR_METRIC_5**\n- Absatz 2: 2-3 Sätze zur Mission des Unternehmens — zeige echtes Verständnis\n- Abschlusssatz: ein Satz Begeisterung, dann neue Zeile schreibe exakt: YOUR_PORTFOLIO_DOMAIN\n- Grußformel: \"Viele Grüße,\" dann Leerzeile dann \"YOUR_NAME\"\n- STRIKT: 280-300 Wörter MAX. Eine A4-Seite.\n\nKOPFZEILE (exakt so übernehmen):\nYOUR_NAME | YOUR_CITY, YOUR_COUNTRY\nYOUR_EMAIL | YOUR_PHONE\nYOUR_LINKEDIN\nDatum: {{ $now.toFormat('dd.MM.yyyy') }}\n\nBetreff: Bewerbung als {{ $('On form submission').item.json['Job Title'] }} – {{ $('On form submission').item.json['Company Name'] }}\n\nLiebes {{ $('On form submission').item.json['Company Name'] }} Team,\n\nKONTEXT FÜR DAS SCHREIBEN:\nJOBTITEL: {{ $('On form submission').item.json['Job Title'] }}\nFIRMA: {{ $('On form submission').item.json['Company Name'] }}\nLEBENSLAUF-ANALYSE: {{ $json.text }}\n\nSTELLENAUSSCHREIBUNG:\n{{ $('On form submission').item.json['Job Description'] }}\n\nSchreibe jetzt das vollständige Anschreiben. Gib nur den Anschreiben-Text zurück, nichts anderes.",
         "batching": {}
       },
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
@@ -217,7 +217,7 @@
         72
       ],
       "id": "a68a0a2b-c838-4ddf-bdac-ae5afd9e6468",
-      "name": "Basic LLM Chain2"
+      "name": "Cover Letter DE"
     },
     {
       "parameters": {
@@ -239,7 +239,7 @@
       "name": "Anthropic Chat Model2",
       "credentials": {
         "anthropicApi": {
-          "id": "ftDQsIkAxDQ2XGq7",
+          "id": "YOUR_CREDENTIAL_ID",
           "name": "Anthropic account"
         }
       }
@@ -249,8 +249,8 @@
         "model": {
           "__rl": true,
           "mode": "list",
-          "value": "claude-sonnet-4-5-20250929",
-          "cachedResultName": "Claude Sonnet 4.5"
+          "value": "claude-sonnet-4-6",
+          "cachedResultName": "Claude Sonnet 4.6"
         },
         "options": {}
       },
@@ -264,14 +264,14 @@
       "name": "Anthropic Chat Model3",
       "credentials": {
         "anthropicApi": {
-          "id": "ftDQsIkAxDQ2XGq7",
+          "id": "YOUR_CREDENTIAL_ID",
           "name": "Anthropic account"
         }
       }
     },
     {
       "parameters": {
-        "fileSelector": "={{ $json['Language'] === 'English Only' ? '/home/node/.n8n-files/Akshun-EN.docx' : '/home/node/.n8n-files/Akshun-DE.docx' }}",
+        "fileSelector": "={{ $json['Language'] === 'English Only' ? '/home/node/.n8n-files/Resume-EN.docx' : '/home/node/.n8n-files/Resume-DE.docx' }}",
         "options": {}
       },
       "type": "n8n-nodes-base.readWriteFile",
@@ -285,7 +285,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const mammoth = require('mammoth');\n\nconst language = $('Edit Fields').first().json['Language'];\nconst filePath = language === 'English Only' \n  ? '/home/node/.n8n-files/Akshun-EN.docx'\n  : '/home/node/.n8n-files/Akshun-DE.docx';\n\nconst result = await mammoth.extractRawText({ path: filePath });\n\nreturn [{\n  json: {\n    ...$('Edit Fields').first().json,\n    resumeText: result.value,\n  }\n}];"
+        "jsCode": "const mammoth = require('mammoth');\n\nconst language = $('Edit Fields').first().json['Language'];\nconst filePath = language === 'English Only' \n  ? '/home/node/.n8n-files/Resume-EN.docx'\n  : '/home/node/.n8n-files/Resume-DE.docx';\n\nconst result = await mammoth.extractRawText({ path: filePath });\n\nreturn [{\n  json: {\n    ...$('Edit Fields').first().json,\n    resumeText: result.value,\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -294,23 +294,10 @@
         -128
       ],
       "id": "297322d6-bc71-4d46-a13f-74422df2963e",
-      "name": "Code in JavaScript"
+      "name": "Extract Text From Resume"
     }
   ],
-  "pinData": {
-    "On form submission": [
-      {
-        "json": {
-          "Job Title": "Growth Operations Manager",
-          "Company Name": "Photoroom",
-          "Language": "English Only",
-          "Job Description": "About the job About Us  Photoroom launched in 2020 after being accepted into Y Combinator and has become the world's most popular AI photo editor over the past four years. Our goal is to create the technology allowing anyone create studio-level product images in minutes.  With over 300 million downloads and processing 5+ billion images annually, we serve both individual creators and major enterprises like Amazon, DoorDash, and Decathlon through our B2C app and B2B API solutions.  We're a profitable, remote-friendly company that has raised Series B funding and aims for 40% year-over-year growth. Our team of 100+ passionate builders focuses on craft, innovation, and collaboration, creating exceptional impact for entrepreneurs and businesses worldwide.  Role Summary  The Growth Operations Manager is responsible for building and optimising the operational systems and experimentation infrastructure behind Photoroom’s product-led growth engine.  This role ensures that growth experiments across acquisition, activation, engagement, and conversion are executed with precision, reliable measurement, and clean behavioural data. The focus is on translating growth strategy into scalable experimentation frameworks, structured analytics, and repeatable operational processes across product and marketing surfaces.  Working in close partnership with Product Growth, Marketing, Data, and RevOps, this person operationalises how growth experiments are designed, measured, and scaled, ensuring that growth insights are accurate, actionable, and aligned with the broader revenue framework.  Compensation: €60k–75k base salary  Location: Remote in France, Italy, UK, Spain, or Germany, with monthly Paris office visits (fully reimbursed)  What you’ll do:  Experimentation Infrastructure  Build and maintain the operational framework that supports high-velocity growth experimentation across product and marketing funnels Ensure experiments are properly instrumented within analytics platforms (e.g. Amplitude), with clear event tracking and success metrics Maintain structured experimentation processes: hypothesis definition, experiment tracking, and results analysis Support growth teams in setting up and QA’ing A/B tests across onboarding flows, paywalls, and conversion journeys  Growth Analytics & Insights  Build and maintain dashboards tracking core PLG metrics: acquisition, activation, feature adoption, retention, and conversion Analyse user behaviour and product usage data to identify growth opportunities and funnel inefficiencies Partner with Product Growth and Marketing to translate insights into prioritised experiment roadmaps Ensure consistent metric definitions and tracking across analytics tools, aligned with shared data standards  PLG Funnel Operations  Maintain operational visibility across the full PLG funnel: acquisition → activation → engagement → conversion Monitor conversion performance across onboarding, paywalls, feature usage, and upgrade flows Identify drop-off points in user journeys and support experiment design to address them Support lifecycle experiments (onboarding emails, product nudges, activation campaigns) in coordination with Marketing Operations  Growth Tooling & Data Infrastructure  Maintain integrations and workflows across growth tooling: Amplitude, HubSpot, experimentation platforms, and analytics pipelines Ensure clean event tracking, user segmentation, and cohort analysis capabilities Improve operational efficiency through automation and AI-assisted workflows for experiment analysis and reporting Maintain documentation of growth metrics, experimentation processes, and tooling architecture  User Insights & Feedback Loops  Support collection and analysis of user feedback, behavioural data, and product usage insights Partner with Product and Growth teams to translate user insights into structured experiments Maintain visibility into key engagement signals that inform product and growth prioritisation  What we're looking for:  Must-have experience:  3–5 years in Growth Operations, Product Analytics, or Growth-focused roles within a B2B or PLG SaaS environment Hands-on experience with product analytics tools (e.g. Amplitude, Mixpanel), including event tracking and funnel analysis Strong understanding of PLG funnels: acquisition, activation, retention, and conversion, and how they operate in practice Experience supporting or operationalising A/B testing and experimentation frameworks Comfortable working with data structures, event taxonomies, and analytics pipelines Strong analytical instinct: you identify data inconsistencies quickly and translate insights into actionable growth opportunities  Strong plus:  Experience working closely with Product Growth teams in a PLG environment Familiarity with experimentation tools (e.g. Optimizely, GrowthBook, LaunchDarkly) Experience integrating marketing and product data (e.g. HubSpot + product analytics) Experience working alongside RevOps and understanding how PLG connects to revenue systems Exposure to AI-driven workflows or automation in growth analytics  What success looks like in the first 6 months:  A clear experimentation framework implemented and adopted across growth teams Reliable dashboards tracking PLG funnel performance across acquisition, activation, retention, and conversion Improved visibility into experiment performance and user behaviour trends Faster experimentation cycles enabled by clean data and structured processes Growth insights consistently informing product and marketing roadmaps  Benefits  Work flexibly from Germany, UK, Italy, France, Ireland, Portugal or Spain  Regular team gatherings, including in-person onboarding in Paris (1–2 weeks), yearly company offsite, team retreats, and quarterly in-person meetings 30 days annual leave plus local public holidays Competitive equity package with stock options/BSPCE €1,000 one-time home office grant OR €400/month co-working space stipend €1,000 annual learning and development budget Private health insurance Access to personalised mental health support via MokaCare Sports and cultural activities reimbursement Relocation support (up to €10k) for those choosing to move to France (visa + housing support)  Note: Visa sponsorship and relocation support are only available for roles based in France.  Hiring Process  Screening call with Talent Manager (30 min) Technical interview with Hiring Manager (45 min) Take-home assignment and live review with the team (45 min) Culture fit interviews and meet the team (~3h total) Reference check and offer  Support: We value diversity and aim to create an inclusive experience for all applicants. Please let us know if there’s anything we can do to make the process more accessible for you.  Diversity, Equity, Inclusion, and Belonging  We're committed to enabling everyone to feel included and valued at work. We believe our company and culture are strongest when composed of diverse experiences and backgrounds.  That's also why we have flexible working hours, trust people to work remotely, and extended parental leave.  All qualified applicants receive consideration for employment without regard to age, color, family, gender identity, marital status, national origin, physical or mental disability, sex (including pregnancy), sexual orientation, or any other characteristic protected by applicable laws.",
-          "submittedAt": "2026-03-21T22:05:10.421+01:00",
-          "formMode": "test"
-        }
-      }
-    ]
-  },
+  "pinData": {},
   "connections": {
     "On form submission": {
       "main": [
@@ -338,18 +325,18 @@
       "ai_languageModel": [
         [
           {
-            "node": "Basic LLM Chain",
+            "node": "Analyse Resume EN",
             "type": "ai_languageModel",
             "index": 0
           }
         ]
       ]
     },
-    "Basic LLM Chain": {
+    "Analyse Resume EN": {
       "main": [
         [
           {
-            "node": "Basic LLM Chain1",
+            "node": "Cover Letter EN",
             "type": "main",
             "index": 0
           }
@@ -360,14 +347,14 @@
       "main": [
         [
           {
-            "node": "Basic LLM Chain",
+            "node": "Analyse Resume EN",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Basic LLM Chain2",
+            "node": "Cover Letter DE",
             "type": "main",
             "index": 0
           }
@@ -378,7 +365,7 @@
       "ai_languageModel": [
         [
           {
-            "node": "Basic LLM Chain2",
+            "node": "Cover Letter DE",
             "type": "ai_languageModel",
             "index": 0
           }
@@ -389,7 +376,7 @@
       "ai_languageModel": [
         [
           {
-            "node": "Basic LLM Chain1",
+            "node": "Cover Letter EN",
             "type": "ai_languageModel",
             "index": 0
           }
@@ -400,14 +387,14 @@
       "main": [
         [
           {
-            "node": "Code in JavaScript",
+            "node": "Extract Text From Resume",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Code in JavaScript": {
+    "Extract Text From Resume": {
       "main": [
         [
           {
@@ -424,11 +411,11 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "3c594b08-34cc-411b-8e52-ef14f20a9214",
+  "versionId": "YOUR_VERSION_ID",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "ba31600bbe8a81e03c686fb0334b7187e74f888b2141e14bcbf74d3f22d16c6a"
+    "instanceId": "YOUR_INSTANCE_ID"
   },
-  "id": "8QIF80XBwgze4sCi",
+  "id": "YOUR_WORKFLOW_ID",
   "tags": []
 }
