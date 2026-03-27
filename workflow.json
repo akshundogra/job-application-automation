@@ -1,0 +1,828 @@
+{
+  "name": "Resume/Cover letter Builder",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Personal Resume and Cover letter generator",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Job Title"
+            },
+            {
+              "fieldLabel": "Company Name"
+            },
+            {
+              "fieldLabel": "Language",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "English Only"
+                  },
+                  {
+                    "option": "German Only"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Job Description"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        -64
+      ],
+      "id": "4a376729-054c-42df-b96d-c2cf207c3857",
+      "name": "On form submission",
+      "webhookId": "e6522179-f9c4-49d3-bd85-878067d58177"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e12aa7d7-8d14-426c-91a7-7dec75fe555d",
+              "name": "slug",
+              "value": "={{ $json['Company Name'].toLowerCase().replace(/[^a-z0-9]+/g, '-')}}",
+              "type": "string"
+            },
+            {
+              "id": "8c678ec7-06e4-44ef-b78e-3d78c2be548f",
+              "name": "utmCoverLetterEN",
+              "value": "={{ 'https://YOUR_PORTFOLIO_DOMAIN/?utm_source=cover-letter-english&utm_medium=pdf&utm_term=' + $json['Company Name'].toLowerCase().replace(/[^a-z0-9]+/g, '-') }}",
+              "type": "string"
+            },
+            {
+              "id": "02111542-3e09-457a-becb-658385130272",
+              "name": "utmCoverLetterDE",
+              "value": "={{ 'https://YOUR_PORTFOLIO_DOMAIN/?utm_source=anschreiben-deutsch&utm_medium=pdf&utm_term=' + $json['Company Name'].toLowerCase().replace(/[^a-z0-9]+/g, '-') }}",
+              "type": "string"
+            },
+            {
+              "id": "c7324ec3-aaa2-424a-8781-3ea474991b51",
+              "name": "fileBase",
+              "value": "={{ 'Your_Name' + $json['Company Name'].replace(/[^a-zA-Z0-9]/g, '_') + '_' + $json['Job Title'].replace(/[^a-zA-Z0-9]/g, '_') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        -64
+      ],
+      "id": "344ab3af-266d-4b1f-bd01-c5f0ab4b96d5",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-6",
+          "mode": "list",
+          "cachedResultName": "Claude Sonnet 4.6"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        1200,
+        -144
+      ],
+      "id": "739f18c0-2819-4a4d-bd13-2c443ba7d85f",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "ftDQsIkAxDQ2XGq7",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('On form submission').item.json.Language }}",
+                    "rightValue": "English Only",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "8f134b19-6c62-452a-a1b2-8fe1c4d515a5"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b72e8b89-7e70-4378-8485-ec1a9dc004b7",
+                    "leftValue": "={{ $('On form submission').item.json.Language }}",
+                    "rightValue": "German Only",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        -64
+      ],
+      "id": "3cbd0fe4-80e7-45f8-87ff-755fc31fb53c",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        2128,
+        -144
+      ],
+      "id": "369e73b8-da93-4cb1-b13f-3a2973b679ff",
+      "name": "Anthropic Chat Model3",
+      "credentials": {
+        "anthropicApi": {
+          "id": "ftDQsIkAxDQ2XGq7",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileSelector": "={{ $json['Language'] === 'English Only' ? '/home/node/.n8n-files/Your_Name-EN.docx' : '/home/node/.n8n-files/Your_Name-DE.docx' }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        -64
+      ],
+      "id": "172488b0-370b-44c3-85a3-dd3af11411f6",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "jsCode": "const mammoth = require('mammoth');\n\nconst language = $('Edit Fields').first().json['Language'];\nconst filePath = language === 'English Only' \n  ? '/home/node/.n8n-files/Your_Name-EN.docx'\n  : '/home/node/.n8n-files/Your_Name-DE.docx';\n\nconst result = await mammoth.extractRawText({ path: filePath });\n\nreturn [{\n  json: {\n    ...$('Edit Fields').first().json,\n    resumeText: result.value,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        -64
+      ],
+      "id": "297322d6-bc71-4d46-a13f-74422df2963e",
+      "name": "Extract Text From Resume"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a resume tailoring assistant for YOUR_NAME, a YOUR_ROLE specialist.\n\nAnalyze their ACTUAL resume against the job description and suggest specific changes to maximize ATS keyword match.\n\nCANDIDATE'S ACTUAL RESUME:\n{{ $json.resumeText }}\n\nJOB TITLE: {{ $json['Job Title'] }}\nCOMPANY: {{ $json['Company Name'] }}\n\nJOB DESCRIPTION:\n{{ $json['Job Description'] }}\n\nIMPORTANT RULES:\n- Only suggest changes using skills and experience already in the resume\n- Never invent tools or experience the candidate does not have\n- Show the EXACT original bullet text and the EXACT replacement text so it can be auto-applied\n- Mirror the EXACT phrases from the JD — not synonyms. If JD says \"demand generation\" use \"demand generation\" not \"lead generation\". If JD says \"GTM motion\" use \"GTM motion\" not \"go-to-market strategy\"\n- Prioritise inserting missing JD keywords naturally into existing bullets\n- Change 4 MUST come from the INKITIN PTY LTD section of the resume\n\nReturn ONLY plain text with this structure:\n1. ATS score before (%)\n2. ATS score after (%)\n3. Top 5 missing keywords from JD\n4. Top 5 resume changes:\n\n   CHANGE 1 — About Me:\n   ORIGINAL: [exact current About Me paragraph]\n   REPLACE WITH: [rewritten version front-loading JD keywords]\n   REASON: [one sentence]\n\n   CHANGE 2 — Ingestro bullet:\n   ORIGINAL: [exact bullet text from Ingestro]\n   REPLACE WITH: [new bullet mirroring exact JD language]\n   REASON: [one sentence]\n\n   CHANGE 3 — Ingestro bullet:\n   ORIGINAL: [exact bullet text from Ingestro]\n   REPLACE WITH: [new bullet mirroring exact JD language]\n   REASON: [one sentence]\n\n   CHANGE 4 — INKITIN bullet:\n   ORIGINAL: [exact bullet text from INKITIN PTY LTD section only]\n   REPLACE WITH: [new bullet mirroring exact JD language]\n   REASON: [one sentence]\n\n   CHANGE 5 — Core Skills section update:\nORIGINAL: [exact current Core Skills line that needs updating — pick the most relevant category]\nREPLACE WITH: [same category but reordered/updated to front-load JD-relevant tools the candidate actually has]\nREASON: [one sentence]\n\nIMPORTANT for Change 5:\n- Only use tools the candidate actually has in their resume\n- Never add tools they haven't used\n- If there is no mention of the tool in Core Skills, find the alternative or most identical tool that the candidate uses\n- If JD mentions Dripify → use PhantomBuster (same category)\n- If JD mentions Luma → use Lemlist or Apollo (same function)\n- Just reorder existing tools to put most JD-relevant ones first",
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1120,
+        -368
+      ],
+      "id": "bdb59a9c-88aa-40ec-a6f6-cbc411736d3a",
+      "name": "Analyse Resume EN"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-6",
+          "mode": "list",
+          "cachedResultName": "Claude Sonnet 4.6"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        1200,
+        368
+      ],
+      "id": "f5aa47a7-f7b7-4fd7-ad3b-f7af7ea66ee1",
+      "name": "Anthropic Chat Model1",
+      "credentials": {
+        "anthropicApi": {
+          "id": "ftDQsIkAxDQ2XGq7",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Du bist ein Lebenslauf-Optimierungsassistent für YOUR_NAME.\n\nAnalysiere den ECHTEN Lebenslauf gegen die Stellenausschreibung und schlage spezifische Änderungen vor, um den ATS-Keyword-Match zu maximieren.\n\nLEBENSLAUF:\n{{ $json.resumeText }}\n\nJOBTITEL: {{ $json['Job Title'] }}\nFIRMA: {{ $json['Company Name'] }}\n\nSTELLENAUSSCHREIBUNG:\n{{ $json['Job Description'] }}\n\nWICHTIGE REGELN:\n- Nur Änderungen basierend auf bereits vorhandenen Fähigkeiten im Lebenslauf\n- Niemals Erfahrungen erfinden oder halluzinieren\n- EXAKTEN Originaltext und EXAKTEN Ersatztext angeben für automatische Anwendung\n- EXAKTE Phrasen aus der Stellenausschreibung spiegeln — keine Synonyme\n- Änderung 4 MUSS aus dem INKITIN PTY LTD Abschnitt kommen\n- ÄNDERUNG 2 und ÄNDERUNG 3 müssen VERSCHIEDENE Bullets sein — niemals denselben Bullet zweimal ändern\n- ÄNDERUNG 2 soll sich auf Metriken/Analyse-Bullets konzentrieren\n- ÄNDERUNG 3 soll sich auf Automatisierung/Pipeline-Bullets konzentrieren\n- Für ÄNDERUNG 5: Nur Tools verwenden die der Kandidat wirklich hat — keine Tools erfinden. Wenn die Stelle z.B. Dripify erwähnt, stattdessen PhantomBuster verwenden (gleiche Kategorie)\n- ÄNDERUNG 5 ist eine AKTUALISIERUNG der bestehenden Core Skills Zeile — nicht eine neue Zeile einfügen\n\nAntworte NUR mit diesem Format:\n1. ATS-Score vorher (%)\n2. ATS-Score nachher (%)\n3. Top 5 fehlende Keywords aus der Stellenausschreibung\n4. Top 5 Lebenslauf-Änderungen:\n\n   ÄNDERUNG 1 — Über mich:\n   ORIGINAL: [exakter aktueller Über-mich-Text]\n   ERSETZEN DURCH: [neu geschriebene Version mit JD-Keywords]\n   GRUND: [ein Satz]\n\n   ÄNDERUNG 2 — Ingestro Bullet (Metriken/Analyse):\n   ORIGINAL: [exakter Bullet-Text von Ingestro — Metriken oder Analyse-fokussiert]\n   ERSETZEN DURCH: [neuer Bullet mit exakter JD-Sprache]\n   GRUND: [ein Satz]\n\n   ÄNDERUNG 3 — Ingestro Bullet (Automatisierung/Pipeline):\n   ORIGINAL: [anderer Bullet-Text von Ingestro — Automatisierung oder Pipeline-fokussiert]\n   ERSETZEN DURCH: [neuer Bullet mit exakter JD-Sprache]\n   GRUND: [ein Satz]\n\n   ÄNDERUNG 4 — INKITIN Bullet:\n   ORIGINAL: [exakter Bullet-Text NUR aus INKITIN PTY LTD Abschnitt]\n   ERSETZEN DURCH: [neuer Bullet mit exakter JD-Sprache]\n   GRUND: [ein Satz]\n\n   ÄNDERUNG 5 — Core Skills Aktualisierung:\n   ORIGINAL: [exakte Core Skills Zeile aus dem Lebenslauf die am relevantesten ist]\n   ERSETZEN DURCH: [gleiche Kategorie aber mit JD-relevanten Tools vorne — nur Tools die der Kandidat wirklich hat]\n   GRUND: [ein Satz]\n\n- Für ÄNDERUNG 5: Nur Tools verwenden die im Lebenslauf vorhanden sind\n- Niemals Tools hinzufügen die der Kandidat nicht verwendet\n- Falls ein Tool aus der Stelle nicht in den Core Skills vorkommt, das nächstähnliche Tool verwenden das der Kandidat hat\n- Wenn die Stelle Dripify erwähnt → PhantomBuster verwenden (gleiche Kategorie)\n- Wenn die Stelle Luma erwähnt → Lemlist oder Apollo verwenden (gleiche Funktion)\n- Nur bestehende Tools umordnen um JD-relevante Tools nach vorne zu stellen",
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1120,
+        144
+      ],
+      "id": "e581e953-3591-41cc-bcce-c3cac3a31cc7",
+      "name": "Analyse Resume DE"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are writing a cover letter in English for Your_Name.\n\nSTRUCTURE (follow exactly):\n- Paragraph 1: 2-3 sentences connecting the role to Your_Name's focus. Never start with \"I am excited to apply\".\n- Bullet list: 4-5 achievements with real metrics using **bold** e.g. **ROAS 36x+**, **400% traffic increase**, **30% CTR increase**, **80% manual effort reduction**, **40% lead quality improvement**\n- Paragraph 2: 2-3 sentences connecting specifically to the company mission\n- - Closing line: one sentence of enthusiasm. Then on a new line write exactly: View my portfolio: YOUR_PORTFOLIO_DOMAIN\n- Sign off: \"Kind regards,\" then blank line then \"Your_Name\"\n- STRICT: 250-280 words MAX. One A4 page only.\n\nHEADER (include exactly as written):\nYour_Name | Nürnberg, Germany\nYour_Namea@gmail.com | YOUR_NUMBER\nlinkedin.com/in/Your_Name\nDate: {{ $now.toFormat('dd.MM.yyyy') }}\n\nSubject: Application for {{ $('On form submission').item.json['Job Title'] }} – {{ $('On form submission').item.json['Company Name'] }}\n\nDear {{ $('On form submission').item.json['Company Name'] }} Team,\n\nCONTEXT FOR WRITING:\nJOB TITLE: {{ $('On form submission').item.json['Job Title'] }}\nCOMPANY: {{ $('On form submission').item.json['Company Name'] }}\nTAILORED RESUME BULLETS (use these as the basis for the cover letter achievements):\n{{ $('Analyse Resume EN').first().json.text }}\n\nJOB DESCRIPTION:\n{{ $('On form submission').item.json['Job Description'] }}\n\nWrite the full cover letter now. Return only the cover letter text, nothing else.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2048,
+        -368
+      ],
+      "id": "0842b272-67f8-4f19-b5c0-9c95c97eb03b",
+      "name": "Cover letter EN"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are converting a resume analysis into a JSON object for automated find-and-replace in a DOCX file.\n\nRESUME ANALYSIS:\n{{ $json.text }}\n\nIMPORTANT: For Change 5 (Core Skills), output exactly:\n{\"find\": null, \"replace\": \"Core Skills: [tools list]\"}\n\nExtract the changes and return ONLY a valid JSON object in exactly this format, nothing else, no markdown, no explanation:\n{\n  \"changes\": [\n    {\n      \"find\": \"exact original text copied from ORIGINAL field above\",\n      \"replace\": \"exact replacement text copied from REPLACE WITH field above\"\n    },\n    {\n      \"find\": \"exact original text\",\n      \"replace\": \"exact replacement text\"\n    },\n    {\n      \"find\": \"exact original text\",\n      \"replace\": \"exact replacement text\"\n    }\n  ]\n}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1472,
+        -368
+      ],
+      "id": "021a3c1d-4126-48d7-a01f-d4fe10d580f7",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        1552,
+        -144
+      ],
+      "id": "1f0b75f9-f762-40a0-952e-9133b6e14ecf",
+      "name": "Anthropic Chat Model4",
+      "credentials": {
+        "anthropicApi": {
+          "id": "ftDQsIkAxDQ2XGq7",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are converting a resume analysis into a JSON object for automated find-and-replace in a DOCX file.\n\nRESUME ANALYSIS:\n{{ $json.text }}\n\nIMPORTANT: For Change 5 (Core Skills), output exactly:\n{\"find\": null, \"replace\": \"Core Skills: [tools list]\"}\n\nExtract the changes and return ONLY a valid JSON object in exactly this format, nothing else, no markdown, no explanation:\n{\n  \"changes\": [\n    {\n      \"find\": \"exact original text copied from ORIGINAL field above\",\n      \"replace\": \"exact replacement text copied from REPLACE WITH field above\"\n    },\n    {\n      \"find\": \"exact original text\",\n      \"replace\": \"exact replacement text\"\n    },\n    {\n      \"find\": \"exact original text\",\n      \"replace\": \"exact replacement text\"\n    }\n  ]\n}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1472,
+        144
+      ],
+      "id": "d0610153-e40f-4068-ab25-9524ee7b994e",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-6",
+          "mode": "list",
+          "cachedResultName": "Claude Sonnet 4.6"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        1552,
+        368
+      ],
+      "id": "80868405-40e3-436f-915a-95a2a31fcbd8",
+      "name": "Anthropic Chat Model5",
+      "credentials": {
+        "anthropicApi": {
+          "id": "ftDQsIkAxDQ2XGq7",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.text;\n\n// Strip markdown code blocks\nconst clean = raw\n  .replace(/^```json\\n?/, '')\n  .replace(/\\n?```$/, '')\n  .trim();\n\nconst parsed = JSON.parse(clean);\n\nreturn [{\n  json: {\n    ...$('Extract Text From Resume').first().json,\n    resumeChanges: parsed.changes,\n    resumeChangesJSON: JSON.stringify(parsed.changes),\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1824,
+        -272
+      ],
+      "id": "f5a01c17-3614-492e-95a5-d50307ea45fb",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.text;\n\n// Strip markdown code blocks\nconst clean = raw\n  .replace(/^```json\\n?/, '')\n  .replace(/\\n?```$/, '')\n  .trim();\n\nconst parsed = JSON.parse(clean);\n\nreturn [{\n  json: {\n    ...$('Extract Text From Resume').first().json,\n    resumeChanges: parsed.changes,\n    resumeChangesJSON: JSON.stringify(parsed.changes),\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1824,
+        144
+      ],
+      "id": "4d371ab0-4c29-41f3-9ca9-33f8c48f6d24",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-6",
+          "mode": "list",
+          "cachedResultName": "Claude Sonnet 4.6"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        2128,
+        368
+      ],
+      "id": "0ebf1445-c6b8-4c1c-91f7-aada84650db4",
+      "name": "Anthropic Chat Model6",
+      "credentials": {
+        "anthropicApi": {
+          "id": "ftDQsIkAxDQ2XGq7",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const language = $('Edit Fields').first().json['Language'];\nconst changes = $('Code in JavaScript').first().json.resumeChanges;\nconst coverText = $('Cover letter EN').first().json.text;\nconst fileBase = $('Edit Fields').first().json.fileBase;\nconst utmCoverEN = $('Edit Fields').first().json.utmCoverLetterEN;\n\nconst config = {\n  language: language,\n  changes: changes,\n  coverText: coverText,\n  fileBase: fileBase,\n  outputDir: '/Users/Your_Name/Desktop/JobApplications/' + $('Edit Fields').first().json.fileBase,\n  utmResume: utmCoverEN.replace('cover-letter-english', 'resume-english'),\n  utmCover: utmCoverEN,\n};\n\nreturn [{ json: config }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        -272
+      ],
+      "id": "3d2a1d2e-c6a1-4f4c-a9dd-3da45d3c4cb4",
+      "name": "Write Config & Run Script EN"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5001/run",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2624,
+        -272
+      ],
+      "id": "68163d68-9505-4750-8e19-4f18290a9f91",
+      "name": "Trigger Python Script EN"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Du schreibst ein Anschreiben auf Deutsch für Your_Name.\n\nSTRUKTUR (exakt einhalten):\n- Absatz 1: 2-3 Sätze, erster Satz beginnt kleingeschrieben nach \"Liebes [Firma] Team,\"\n- Bullet-Liste: 4-5 konkrete Leistungen mit echten Metriken z.B. **ROAS 36x+**, **400% Traffic-Steigerung**, **30% CTR-Verbesserung**, **80% weniger manueller Aufwand**, **40% bessere Lead-Qualität**\n- Absatz 2: 2-3 Sätze zur Mission des Unternehmens — zeige echtes Verständnis\n- Abschlusssatz: ein Satz Begeisterung, dann neue Zeile schreibe exakt: YOUR_PORTFOLIO_DOMAIN\n- Grußformel: \"Viele Grüße,\" dann Leerzeile dann \"Your_Name\"\n- STRIKT: 280-300 Wörter MAX. Eine A4-Seite.\n\nKOPFZEILE (exakt so übernehmen):\nYour_Name | Nürnberg, Deutschland\nYour_Namea@gmail.com | YOUR_Number \nlinkedin.com/in/Your_Name\nDatum: {{ $now.toFormat('dd.MM.yyyy') }}\n\nBetreff: Bewerbung als {{ $('On form submission').item.json['Job Title'] }} – {{ $('On form submission').item.json['Company Name'] }}\n\nLiebes {{ $('On form submission').item.json['Company Name'] }} Team,\n\nKONTEXT FÜR DAS SCHREIBEN:\nJOBTITEL: {{ $('On form submission').item.json['Job Title'] }}\nFIRMA: {{ $('On form submission').item.json['Company Name'] }}\nANGEPASSTE LEBENSLAUF-BULLETS (nutze diese als Grundlage für das Anschreiben):\n{{ $('Analyse Resume DE').first().json.text }}\n\nSTELLENAUSSCHREIBUNG:\n{{ $('On form submission').item.json['Job Description'] }}\n\nSchreibe jetzt das vollständige Anschreiben auf Deutsch. Gib nur den Anschreiben-Text zurück, nichts anderes.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2048,
+        144
+      ],
+      "id": "d2224d62-d0a6-488a-ab5a-722d02c5d6ec",
+      "name": "Cover letter DE"
+    },
+    {
+      "parameters": {
+        "jsCode": "const language = $('Edit Fields').first().json['Language'];\nconst changes = $('Code in JavaScript1').first().json.resumeChanges;\nconst coverText = $('Cover letter DE').first().json.text;\nconst fileBase = $('Edit Fields').first().json.fileBase;\nconst utmCoverDE = $('Edit Fields').first().json.utmCoverLetterDE;\n\nconst config = {\n  language: language,\n  changes: changes,\n  coverText: coverText,\n  fileBase: fileBase,\n  outputDir: '/Users/Your_Name/Desktop/JobApplications/' + $('Edit Fields').first().json.fileBase,\n  utmResume: utmCoverDE.replace('anschreiben-deutsch', 'lebenslauf-deutsch'),\n  utmCover: utmCoverDE,\n};\n\nreturn [{ json: config }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        144
+      ],
+      "id": "e393cd05-3ee2-4b6b-bcb9-2e6f9999d3a5",
+      "name": "Write Config & Run Script DE"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5001/run",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2624,
+        144
+      ],
+      "id": "88dfde94-e5a9-4203-a830-eb9350c123a1",
+      "name": "Trigger Python Script DE"
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs = require('fs');\n\nconst logPath = '/home/node/.n8n-files/applications_log.csv';\nconst date = new Date().toISOString().split('T')[0];\nconst company = $('Edit Fields').first().json['Company Name'];\nconst jobTitle = $('Edit Fields').first().json['Job Title'];\nconst language = $('Edit Fields').first().json['Language'];\n\nconst analysisText = $('Analyse Resume EN').first().json.text;\n\n// Match patterns like \"42%\" or \"42 %\" near \"before/after\"\nconst lines = analysisText.split('\\n');\nlet atsBefore = 'N/A';\nlet atsAfter = 'N/A';\n\nfor (const line of lines) {\n    const num = line.match(/:\\s*(\\d+)\\s*%/);\n    if (!num) continue;\n    if (/before/i.test(line)) atsBefore = num[1];\n    if (/after/i.test(line)) atsAfter = num[1];\n}\n\nconst row = `${date},\"${company}\",\"${jobTitle}\",\"${language}\",${atsBefore},${atsAfter}\\n`;\n\nif (!fs.existsSync(logPath)) {\n    fs.writeFileSync(logPath, 'Date,Company,Job Title,Language,ATS Before,ATS After\\n');\n}\n\nfs.appendFileSync(logPath, row);\n\nreturn [{ json: { logged: true, row: row.trim() } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2848,
+        -272
+      ],
+      "id": "24e621bc-b579-4693-b6b6-aa048d5dad79",
+      "name": "Log Application EN"
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs = require('fs');\n\nconst logPath = '/home/node/.n8n-files/applications_log.csv';\nconst date = new Date().toISOString().split('T')[0];\nconst company = $('Edit Fields').first().json['Company Name'];\nconst jobTitle = $('Edit Fields').first().json['Job Title'];\nconst language = $('Edit Fields').first().json['Language'];\n\nconst analysisText = $('Analyse Resume DE').first().json.text;\n\n// Match patterns like \"42%\" or \"42 %\" near \"before/after\"\nconst lines = analysisText.split('\\n');\nlet atsBefore = 'N/A';\nlet atsAfter = 'N/A';\n\nfor (const line of lines) {\n    const num = line.match(/:\\s*(\\d+)\\s*%/);\n    if (!num) continue;\n    if (/before|vorher/i.test(line)) atsBefore = num[1];\n    if (/after|nachher/i.test(line)) atsAfter = num[1];\n}\n\nconst row = `${date},\"${company}\",\"${jobTitle}\",\"${language}\",${atsBefore},${atsAfter}\\n`;\n\nif (!fs.existsSync(logPath)) {\n    fs.writeFileSync(logPath, 'Date,Company,Job Title,Language,ATS Before,ATS After\\n');\n}\n\nfs.appendFileSync(logPath, row);\n\nreturn [{ json: { logged: true, row: row.trim() } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2848,
+        144
+      ],
+      "id": "fb2f2abf-4a85-43e8-a6b9-2e2eb1235790",
+      "name": "Log Application DE"
+    }
+  ],
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "Job Title": "Lifecycle & Growth Marketing Manager",
+          "Company Name": "Platform Engineering",
+          "Language": "English Only",
+          "Job Description": "About the job About Platform Engineering  Platform Engineering (platformengineering.org) is home to the world’s largest community of platform engineers. Through events like PlatformCon, which brings together over 35,000 participants every year, we connect thousands of professionals, share best practices, and help shape the future of how teams build and scale internal developer platforms.  We’re now looking for a hands-on Lifecycle & Growth Marketing Manager to own our lifecycle engine end to end, from first touch to activation, retention and conversion, ensuring our growth systems run reliably across key funnels.  In this role, you’ll be responsible for turning traffic and interest into engaged subscribers and learners, converting new leads into customers, and upselling existing customers via thoughtful lifecycle journeys. You’ll also run distribution campaigns through channels like Dripify/Luma, manage our Platform Engineering job board as a growth channel, and own the lifecycle operations behind Platform Engineering University.  What you’ll be doing  Owning end-to-end lifecycle marketing across acquisition, activation and retention (broadcasts + nurtures + lead onboarding + re-engagement + upsell/cross-sell).  Building and optimizing lifecycle workflows in HubSpot (segmentation, lists, properties, workflows/automations, basic scoring where relevant).  Creating and improving email experiences: messaging, sequencing, timing, CTAs, and landing page alignment.  Maintaining deliverability health (list hygiene, suppression logic, bounce/complaint monitoring, ongoing cleanup).  Owning email performance reporting end-to-end (open/click rates, A/B testing, campaign analysis tied to course sales outcomes).  Planning and running highly targeted growth campaigns through Dripify and Luma (small audiences, high intent).  Owning the Platform Engineering job board as a growth channel: job intake/curation, posting QA, tagging, freshness, and subscriber conversion.  Owning the lifecycle operations behind Platform Engineering University: course publishing workflows (content uploads, landing page setup, QA), learner lifecycle flows (onboarding, reminders, surveys, certificates), operational dashboards, and reliable learner experience (including inbox SLAs and live session coordination).   What we’re looking for  3+ years of hands-on experience in Lifecycle Marketing / Email Marketing / Growth ops (B2B SaaS or similar environment preferred).  Strong experience building lifecycle systems inside modern CRM and marketing automation platforms (segmentation, workflows, reporting, CRM hygiene). Comfortable adapting as systems evolve.  Proven ability to build lifecycle systems that drive outcomes (not just “send emails”): nurture → conversion, onboarding → activation, retention/upsell.  Strong analytical instincts: you can measure performance, run A/B tests, and tie campaigns to revenue outcomes.  Operational rigour and high attention to detail (you design processes that scale and run reliably).  Clear written English and good copy instincts (especially for targeted B2B email comms).  Comfortable owning both growth systems and revenue delivery operations in fast-paced environment  Why you’ll love working with us  Build the lifecycle engine behind the world’s largest platform engineering community.  Fully remote team spread across the globe.  Competitive salary plus equity in a high-growth company.  Real ownership: you’ll run core growth systems end-to-end, not just support them.  A transparent, collaborative culture where shipping consistently matters more than slide decks.   If you’re excited about lifecycle marketing, love building clean growth systems, and want to help shape the future of platform engineering, we’d love to hear from you!",
+          "submittedAt": "2026-03-26T18:45:21.687-04:00",
+          "formMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analyse Resume EN",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Analyse Resume EN",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Analyse Resume DE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Cover letter EN",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Extract Text From Resume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text From Resume": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyse Resume EN": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analyse Resume DE",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyse Resume DE": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Cover letter EN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Cover letter DE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Cover letter DE",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cover letter EN": {
+      "main": [
+        [
+          {
+            "node": "Write Config & Run Script EN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Config & Run Script EN": {
+      "main": [
+        [
+          {
+            "node": "Trigger Python Script EN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cover letter DE": {
+      "main": [
+        [
+          {
+            "node": "Write Config & Run Script DE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Config & Run Script DE": {
+      "main": [
+        [
+          {
+            "node": "Trigger Python Script DE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Python Script EN": {
+      "main": [
+        [
+          {
+            "node": "Log Application EN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Python Script DE": {
+      "main": [
+        [
+          {
+            "node": "Log Application DE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f1e8b680-8758-4def-9b79-602419ff0ce8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ba31600bbe8a81e03c686fb0334b7187e74f888b2141e14bcbf74d3f22d16c6a"
+  },
+  "id": "8QIF80XBwgze4sCi",
+  "tags": []
+}

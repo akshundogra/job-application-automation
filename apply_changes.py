@@ -37,18 +37,18 @@ def fix_utm_in_table(doc, utm_url):
             for cell in row.cells:
                 for para in cell.paragraphs:
                     full_text = para.text
-                    if 'akshundogra.com' in full_text:
+                    if 'Your_Domain' in full_text:
                         p_xml = para._p
                         hyperlinks = p_xml.findall('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}hyperlink')
                         for hl in hyperlinks:
                             hl_text = ''.join(t.text for t in hl.findall('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t') if t.text)
-                            if 'akshundogra.com' in hl_text and 'utm' not in hl_text:
+                            if 'Your_Domain' in hl_text and 'utm' not in hl_text:
                                 r_id = hl.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id')
                                 if r_id:
                                     try:
                                         para.part.rels[r_id]._target = utm_url
                                         for t_elem in hl.findall('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t'):
-                                            t_elem.text = 'akshundogra.com'
+                                            t_elem.text = 'Your_Domain'
                                             break
                                     except:
                                         pass
@@ -129,19 +129,19 @@ def create_cover_letter_docx(cover_text, output_path, utm_url):
             p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.MULTIPLE
             p.paragraph_format.line_spacing = 1.1
             continue
-        if 'akshundogra.com' in line:
+        if 'YOUR_Domain' in line:
             p = doc.add_paragraph()
             p.paragraph_format.space_before = Pt(0)
             p.paragraph_format.space_after = Pt(0)
-            if ':' in line and 'akshundogra.com' in line:
-                prefix = line.split('akshundogra.com')[0]
+            if ':' in line and 'YOUR_Domain' in line:
+                prefix = line.split('YOUR_Domain')[0]
                 run = p.add_run(prefix)
                 run.bold = True
                 run.font.size = Pt(10.5)
                 run.font.name = 'Calibri'
-                add_hyperlink(p, utm_url, 'akshundogra.com', bold=True)
+                add_hyperlink(p, utm_url, 'YOUR_Domain', bold=True)
             else:
-                add_hyperlink(p, utm_url, 'akshundogra.com', bold=True)
+                add_hyperlink(p, utm_url, 'YOUR_Domain', bold=True)
             continue
         p = doc.add_paragraph()
         p.paragraph_format.space_before = Pt(0)
@@ -197,11 +197,11 @@ def main():
     os.makedirs(output_dir, exist_ok=True)
 
     if 'English' in language:
-        source_resume = '/Users/akshundogra/.n8n-files/Akshun-EN.docx'
+        source_resume = '/Users/YOUR_USERNAME/.n8n-files/YOUR_RESUME-EN.docx'
         resume_out = os.path.join(output_dir, f'{date_prefix}_{file_base}_Resume_EN.docx')
         cover_out = os.path.join(output_dir, f'{date_prefix}_{file_base}_CoverLetter_EN.docx')
     else:
-        source_resume = '/Users/akshundogra/.n8n-files/Akshun-DE.docx'
+        source_resume = '/Users/YOUR_USERNAME/.n8n-files/YOUR_RESUME-DE'
         resume_out = os.path.join(output_dir, f'{date_prefix}_{file_base}_Lebenslauf_DE.docx')
         cover_out = os.path.join(output_dir, f'{date_prefix}_{file_base}_Anschreiben_DE.docx')
 
@@ -209,8 +209,8 @@ def main():
     create_cover_letter_docx(cover_text, cover_out, utm_cover)
     resume_pdf = convert_to_pdf_with_word(resume_out)
     cover_pdf = convert_to_pdf_with_word(cover_out)
-    scrub_metadata(resume_pdf, 'Akshun Dogra')
-    scrub_metadata(cover_pdf, 'Akshun Dogra')
+    scrub_metadata(resume_pdf, 'Your_Name')
+    scrub_metadata(cover_pdf, 'Your_Name')
 
     result = {
         'resumePDF': resume_pdf,
