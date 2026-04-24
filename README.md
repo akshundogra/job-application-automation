@@ -106,7 +106,7 @@ If you deploy this automation and collect any analytics data:
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/job-application-automation.git
+git clone https://github.com/akshundogra/job-application-automation.git
 cd job-application-automation
 ```
 
